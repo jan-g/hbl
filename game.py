@@ -5,10 +5,13 @@ pygame.init()
 bgcolour = 0, 0, 0
 linecolour = 255, 255, 255
 width, height = 640, 250
+overlap = 20
 
-def get_canvas():
+def get_canvas(top=None):
     screen = pygame.display.set_mode((width, height))
     screen.fill(bgcolour)
+    if top is not None:
+        screen.blit(top, (0, 0), ((0, height-overlap), (width, overlap)))
 
     running = True
     current_pos = (0, 0)
@@ -55,18 +58,18 @@ def draw():
 
     # Then the body
     print("body!")
-    b = get_canvas()
+    b = get_canvas(h)
 
     print("legs!")
-    l = get_canvas()
+    l = get_canvas(b)
     return h, b, l
 
 
 def stitch(h, b, l):
-    screen = pygame.display.set_mode((width, height * 3))
-    screen.blit(h, (0, 0))
-    screen.blit(b, (0, height))
-    screen.blit(l, (0, height * 2))
+    screen = pygame.display.set_mode((width, height * 3 - overlap * 2))
+    screen.blit(h, (0, 0), ((0, 0), (width, height - overlap)))
+    screen.blit(b, (0, height - overlap), ((0, 0), (width, height - overlap)))
+    screen.blit(l, (0, height * 2 - overlap * 2))
     pygame.display.update()
 
 
