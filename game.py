@@ -1,25 +1,22 @@
 import pygame
-from PIL import Image
-
 
 pygame.init()
 
 bgcolour = 0, 0, 0
 linecolour = 255, 255, 255
-x = y = 0
-screen = pygame.display.set_mode((640, 480))
+width, height = 640, 250
 
+def get_canvas():
+    screen = pygame.display.set_mode((width, height))
+    screen.fill(bgcolour)
 
-
-def get_canvas(fname):
     running = True
     current_pos = (0, 0)
     button_down = False
     should_be_drawing = False
-    screen.fill(bgcolour)
 
     while running:
-        event = pygame.event.poll()
+        event = pygame.event.wait()
         if event.type == pygame.NOEVENT:
             continue
 
@@ -48,32 +45,37 @@ def get_canvas(fname):
         if keys[pygame.K_SPACE]:
             break
 
-    pygame.image.save(screen, fname)
+    # pygame.image.save(screen, fname)
+    return screen.copy()
 
 def draw():
     # Draw the head
     print("head!")
-    get_canvas("head")
+    h = get_canvas()
 
     # Then the body
     print("body!")
-    get_canvas("body")
+    b = get_canvas()
+
+    print("legs!")
+    l = get_canvas()
+    return h, b, l
 
 
-    get_canvas("legs")
+def stitch(h, b, l):
+    screen = pygame.display.set_mode((width, height * 3))
+    screen.blit(h, (0, 0))
+    screen.blit(b, (0, height))
+    screen.blit(l, (0, height * 2))
+    pygame.display.update()
 
 
-def stitch():
-    list_im = ['head','body','legs']
-    new_im = Image.new('RGB', (640,480 * 3)) #creates a new empty image, RGB mode, and size 444 by 95
+def wait():
+    while pygame.event.wait().type != pygame.QUIT:
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_ESCAPE]:
+            break
 
-    for i, elem in enumerate(list_im):
-        im=Image.open(elem)
-        new_im.paste(im, (0, 480 * i))
-    new_im.save('test.jpg')
-
-
-draw()
-stitch()
-im = Image.open("test.jpg")
-im.show()
+h, b, l = draw()
+stitch(h, b, l)
+wait()
